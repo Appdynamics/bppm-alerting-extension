@@ -1,0 +1,114 @@
+################################################################################
+#
+# File name: appdynamics_event.baroc
+# Version: 8.6.02
+# Copyright 1998-2010 BMC Software, Inc. All Rights Reserved
+#
+################################################################################
+#
+# AppDynamics event structure for BPPM integration
+#
+# Authors  	: Pranta Das (AppDynamics).
+# Created on: December 28, 2011
+# Updated on: April 4, 2012
+#
+#
+################################################################################
+ENUMERATION SCOPE_TYPE 
+10	APPLICATION 
+20	APPLICATION_COMPONENT 
+30 APPLICATION_COMPONENT_NODE
+END
+	
+ENUMERATION VALUE_FUNCTION_TYPE
+10	MIN 
+20	MAX 
+30 	VALUE
+END
+
+ENUMERATION OPERATOR
+10	EQUALS 
+20	NOT_EQUALS		
+30	LESS_THAN
+40	LESS_THAN_EQUALS
+50	GREATER_THAN 
+60	GREATER_THAN_EQUALS 
+END
+
+ENUMERATION CONDITION_UNIT_TYPE
+10	ABSOLUTE 
+20	BASELINE_STANDARD_DEVIATION 
+30	BASELINE_PERCENTAGE 
+40	BASELINE_PERCENTILE
+END
+
+ENUMERATION ENTITY_TYPE
+10		APPLICATION 
+20		APPLICATION_COMPONENT 
+30		APPLICATION_COMPONENT_NODE 
+40		BUSINESS_TRANSACTION
+50		APPLICATION_DIAGNOSTIC_DATA
+END
+
+#-----------------------------------------------------------------------
+# 
+# APPDYNAMICS_BASE_EVENT - AppDynamics Base Event
+# 
+#-----------------------------------------------------------------------
+MC_EV_CLASS : APPDYNAMICS_BASE_EVENT ISA EVENT
+DEFINES
+{
+	ad_application_name : STRING;
+	ad_application_id:INTEGER;
+	ad_tag:STRING;
+	ad_period_in_minutes: INTEGER;
+};
+END
+
+#-----------------------------------------------------------------------
+# 
+# APPDYNAMICS_POLICY_VIOLATION_NOTIFICATION 
+#                  - AppDynamics Policy Violation Notification
+# 
+# ----------------------------------------------------------------------
+MC_EV_CLASS : APPDYNAMICS_POLICY_VIOLATION_NOTIFICATION 
+ISA APPDYNAMICS_BASE_EVENT 
+DEFINES
+{
+	ad_affected_entity_type: ENTITY_TYPE;
+	ad_affected_entity_name: STRING;
+	ad_affected_entity_id: INTEGER;
+	ad_evaluation_entity_type: ENTITY_TYPE;
+	ad_evaluation_entity_name: STRING;
+	ad_evaluation_entity_id: INTEGER;
+	ad_scope_type: SCOPE_TYPE;
+	ad_scope_name: STRING;
+	ad_scope_id: INTEGER;
+	ad_value_function_type:VALUE_FUNCTION_TYPE;
+	ad_parameter_id: INTEGER; 
+	ad_operator: OPERATOR;
+	ad_condition_unit_type: CONDITION_UNIT_TYPE;
+	ad_use_default_baseline: MC_YESNO;
+	ad_baseline_name: STRING;
+	ad_baseline_id: INTEGER;
+};
+END
+
+
+#-----------------------------------------------------------------------
+# 
+# APPDYNAMICS_EVENT_NOTIFICATION - AppDynamics Event Notification
+# 
+# ----------------------------------------------------------------------
+MC_EV_CLASS : APPDYNAMICS_EVENT_NOTIFICATION ISA APPDYNAMICS_BASE_EVENT
+DEFINES
+{
+	ad_event_types: LIST_OF STRING;
+	ad_number_of_events_for_event_type: LIST_OF INTEGER;
+	ad_event_summary_id:INTEGER;
+	ad_event_summary_time: STRING;
+	ad_event_summary_type: STRING;
+	ad_event_summary_severity: STRING;
+};
+END
+	

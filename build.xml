@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the bppmClient build file, it builds all files needed and packages them.
+     It makes one jar bppmClient.jar and packages it with other required files into a single
+     archive file bppmClient<version>.zip
+ -->
+<project name="bppmClient" default="compile" basedir=".">
+	<property file="version.properties" />
+	<property name="src" location="src/main/java"/>
+	<property name="build" location="build"/>
+	<property name="classes" location="${build}/classes"/>
+	<property name="docs" location="${build}/docs"/>
+	<property name="dist" location="dist"/>
+	<property name="conf" location="src/main/conf"/>
+	<property name="custom-actions" location="src/main/custom/actions"/>
+    	<property name="xml-schema" location="lib/axis2-1.6.1/XmlSchema-1.4.7.jar"/>
+    	<property name="axiom-api" location="lib/axis2-1.6.1/axiom-api-1.2.12.jar"/>
+    	<property name="axiom-impl" location="lib/axis2-1.6.1/axiom-impl-1.2.12.jar"/>
+    	<property name="axis2-adb" location="lib/axis2-1.6.1/axis2-adb-1.6.1.jar"/>
+    	<property name="axis2-kernel" location="lib/axis2-1.6.1/axis2-kernel-1.6.1.jar"/>
+    	<property name="axis2-metadata" location="lib/axis2-1.6.1/axis2-metadata-1.6.1.jar"/>
+    	<property name="axis2-http-transport" location="lib/axis2-1.6.1/axis2-transport-http-1.6.1.jar" />
+    	<property name="axis2-local-transport" location="lib/axis2-1.6.1/axis2-transport-local-1.6.1.jar" />
+    	<property name="axis2-commons-cli" location="lib/axis2-1.6.1/commons-cli-1.2.jar"/>
+	<property name="axis2-commons-codec" location="lib/axis2-1.6.1/commons-codec-1.3.jar"/>
+	<property name="axis2-commons-httpclient" location="lib/axis2-1.6.1/commons-httpclient-3.1.jar"/>
+	<property name="axis2-commons-io" location="lib/axis2-1.6.1/commons-io-1.4.jar"/>
+	<property name="axis2-commons-logging" location="lib/axis2-1.6.1/commons-logging-1.1.1.jar"/>
+	<property name="axis2-http-core" location="lib/axis2-1.6.1/httpcore-4.0.jar"/>
+	<property name="axis2-jsr311-api" location="lib/axis2-1.6.1/jsr311-api-1.0.jar"/>
+	<property name="axis2-log4j" location="lib/axis2-1.6.1/log4j-1.2.15.jar"/>
+	<property name="axis2-wsdl4j" location="lib/axis2-1.6.1/wsdl4j-1.6.2.jar"/>
+	<property name="axis2-xalan" location="lib/axis2-1.6.1/xalan-2.7.0.jar"/>
+	<property name="axis2-xmlresolver" location="lib/axis2-1.6.1/xml-resolver-1.2.jar"/>
+	<property name="axis2-neethi" location="lib/axis2-1.6.1/neethi-3.0.1.jar"/>
+	<property name="axis2-mail" location="lib/axis2-1.6.1/mail-1.4.jar"/>
+    	<property name="xml-schema-lic" location="lib/axis2-1.6.1/XmlSchema-LICENSE.txt"/>
+    	<property name="axiom-api-lic" location="lib/axis2-1.6.1/axiom-api-LICENSE.txt"/>
+    	<property name="axiom-impl-lic" location="lib/axis2-1.6.1/axiom-impl-LICENSE.txt"/>
+    	<property name="axis2-lic" location="lib/axis2-1.6.1/axis2-LICENSE.txt"/>
+    	<property name="axis2-commons-cli-lic" location="lib/axis2-1.6.1/commons-cli-LICENSE.txt"/>
+	<property name="axis2-commons-codec-lic" location="lib/axis2-1.6.1/commons-codec-LICENSE.txt"/>
+	<property name="axis2-commons-httpclient-lic" location="lib/axis2-1.6.1/commons-httpclient-LICENSE.txt"/>
+	<property name="axis2-commons-io-lic" location="lib/axis2-1.6.1/commons-io-LICENSE.txt"/>
+	<property name="axis2-commons-logging-lic" location="lib/axis2-1.6.1/commons-logging-LICENSE.txt"/>
+	<property name="axis2-http-core-lic" location="lib/axis2-1.6.1/httpcore-LICENSE.txt"/>
+	<property name="axis2-jsr311-api-lic" location="lib/axis2-1.6.1/jsr311-api-LICENSE.txt"/>
+	<property name="axis2-log4j-lic" location="lib/axis2-1.6.1/log4j-LICENSE.txt"/>
+	<property name="axis2-wsdl4j-lic" location="lib/axis2-1.6.1/wsdl4j-LICENSE.txt"/>
+	<property name="axis2-xalan-lic" location="lib/axis2-1.6.1/xalan-LICENSE.txt"/>
+	<property name="axis2-xmlresolver-lic" location="lib/axis2-1.6.1/xml-resolver-LICENSE.txt"/>
+	<property name="axis2-neethi-lic" location="lib/axis2-1.6.1/neethi-LICENSE.txt"/>
+	<property name="axis2-mail-lic" location="lib/axis2-1.6.1/mail-LICENSE.txt"/>
+	<property environment="env"/>
+        <tstamp>
+                <format property="TODAY" pattern="yyyy-MM-dd HH:mm"/>
+        </tstamp>
+			
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="lib/ant-contrib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${classes}"/>
+		<mkdir dir="${build}/temp"/>
+		<mkdir dir="${build}/temp/custom"/>
+		<mkdir dir="${build}/temp/custom/lib"/>
+		<mkdir dir="${build}/temp/custom/logs"/>
+		<mkdir dir="${build}/temp/custom/conf"/>
+		<mkdir dir="${build}/temp/custom/actions"/>
+		<mkdir dir="${build}/temp/custom/actions/notify-bppm-of-event"/>
+		<mkdir dir="${build}/temp/custom/actions/notify-bppm-of-policy-violation"/>
+	</target>
+
+	<target name="clean">
+		<delete failonerror="true" quiet="true" dir="${dist}"/>
+		<delete failonerror="true" quiet="true" dir="${build}"/>
+	</target>
+
+	<target name="debugcompile">
+        	<javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="on" debuglevel="lines,vars,source" includeantruntime="false">
+		   <src path="${src}"/>
+		   <classpath>
+			<pathelement location="${xml-schema}"/>
+			<pathelement location="${axiom-api}"/>
+			<pathelement location="${axiom-impl}"/>
+			<pathelement location="${axis2-adb}"/>
+			<pathelement location="${axis2-kernel}"/>
+			<pathelement location="${axis2-metadata}"/>
+			<pathelement location="${axis2-http-transport}" />
+			<pathelement location="${axis2-local-transport}"/>
+			<pathelement location="${axis2-commons-cli}"/>
+			<pathelement location="${axis2-commons-codec}"/>
+			<pathelement location="${axis2-commons-httpclient}"/>
+			<pathelement location="${axis2-commons-io}"/>
+			<pathelement location="${axis2-commons-logging}"/>
+			<pathelement location="${axis2-http-core}" />
+			<pathelement location="${axis2-jsr311-api}"/>
+			<pathelement location="${axis2-log4j}"/>
+			<pathelement location="${axis2-wsdl4j}"/>
+			<pathelement location="${axis2-xalan}"/>
+			<pathelement location="${axis2-xmlresolver}"/>
+			<pathelement location="${axis2-neethi}"/>
+			<pathelement location="${axis2-mail}"/>
+		   </classpath>
+            	<include name="com/appdynamics/**/*.java"/>
+              </javac>
+	</target>
+	<target name="compile" depends="init">
+        	<javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="off" includeantruntime="false">
+		   <src path="${src}"/>
+		   <classpath>
+			<pathelement location="${xml-schema}"/>
+			<pathelement location="${axiom-api}"/>
+			<pathelement location="${axiom-impl}"/>
+			<pathelement location="${axis2-adb}"/>
+			<pathelement location="${axis2-kernel}"/>
+			<pathelement location="${axis2-metadata}"/>
+			<pathelement location="${axis2-http-transport}" />
+			<pathelement location="${axis2-local-transport}"/>
+			<pathelement location="${axis2-commons-cli}"/>
+			<pathelement location="${axis2-commons-codec}"/>
+			<pathelement location="${axis2-commons-httpclient}"/>
+			<pathelement location="${axis2-commons-io}"/>
+			<pathelement location="${axis2-commons-logging}"/>
+			<pathelement location="${axis2-http-core}" />
+			<pathelement location="${axis2-jsr311-api}"/>
+			<pathelement location="${axis2-log4j}"/>
+			<pathelement location="${axis2-wsdl4j}"/>
+			<pathelement location="${axis2-xalan}"/>
+			<pathelement location="${axis2-xmlresolver}"/>
+			<pathelement location="${axis2-neethi}"/>
+			<pathelement location="${axis2-mail}"/>
+		   </classpath>
+            	<include name="com/appdynamics/**/*.java"/>
+              </javac>
+	</target>
+
+    <target name="debugjar" depends="debugcompile">
+	 <jar destfile="${build}/temp/custom/lib/bppmClient.jar">
+                        <fileset dir="${classes}"/>
+                        <manifest>
+                            <attribute name="Implementation-Vendor" value="AppDynamics Inc."/>
+                            <attribute name="Implementation-Version" value="BPPM Client v${bppm-client-version} ${release} Build Date ${TODAY}"/>
+                            <attribute name="Main-Class" value="com.appdynamics.bmc.bppmClient.SendADNotificationToBPPM"/>
+                            <attribute name="Class-Path" value="./XmlSchema-1.4.7.jar ./axiom-api-1.2.12.jar ./axiom-impl-1.2.12.jar ./axis2-adb-1.6.1.jar ./axis2-kernel-1.6.1.jar ./axis2-metadata-1.6.1.jar ./axis2-transport-http-1.6.1.jar ./axis2-transport-local-1.6.1.jar ./commons-cli-1.2.jar ./commons-codec-1.3.jar ./commons-httpclient-3.1.jar ./commons-io-1.4.jar ./commons-logging-1.1.1.jar ./httpcore-4.0.jar ./jsr311-api-1.0.jar ./log4j-1.2.15.jar ./log4j.xml  ./wsdl4j-1.6.2.jar ./xalan-2.7.0.jar ./xml-resolver-1.2.jar ./neethi-3.0.1.jar ./mail-1.4.jar ." />
+			</manifest>
+         </jar>
+
+    </target>
+    <target name="jar" depends="compile">
+	 <jar destfile="${build}/temp/custom/lib/bppmClient.jar">
+                        <fileset dir="${classes}"/>
+                        <manifest>
+                            <attribute name="Implementation-Vendor" value="AppDynamics Inc."/>
+                            <attribute name="Implementation-Version" value="BPPM Client v${bppm-client-version} ${release} Build Date ${TODAY}"/>
+                            <attribute name="Main-Class" value="com.appdynamics.bmc.bppmClient.SendADNotificationToBPPM"/>
+                            <attribute name="Class-Path" value="./XmlSchema-1.4.7.jar ./axiom-api-1.2.12.jar ./axiom-impl-1.2.12.jar ./axis2-adb-1.6.1.jar ./axis2-kernel-1.6.1.jar ./axis2-metadata-1.6.1.jar ./axis2-transport-http-1.6.1.jar ./axis2-transport-local-1.6.1.jar ./commons-cli-1.2.jar ./commons-codec-1.3.jar ./commons-httpclient-3.1.jar ./commons-io-1.4.jar ./commons-logging-1.1.1.jar ./httpcore-4.0.jar ./jsr311-api-1.0.jar ./log4j-1.2.15.jar ./log4j.xml  ./wsdl4j-1.6.2.jar ./xalan-2.7.0.jar ./xml-resolver-1.2.jar ./neethi-3.0.1.jar ./mail-1.4.jar ."/>
+			</manifest>
+         </jar>
+
+    </target>
+
+    <target name="package" depends="jar">
+        <if>
+                <or>
+                        <os family="unix" />
+                        <os family="mac" />  
+                </or>
+        <then>
+                <copy tofile="${build}/temp/custom/actions/custom.xml" file="${custom-actions}/custom.xml.linux" />        </then>
+        <elseif> <os family="windows" />
+        <then>
+                <copy tofile="${build}/temp/custom/actions/custom.xml" file="${custom-actions}/custom.xml.windows" />        </then>
+        </elseif>
+        <else>
+        <then>
+                <copy tofile="${build}/temp/custom/actions/custom.xml" file="${custom-actions}/custom.xml.linux" />
+        </then>             </else>
+        </if>
+                <copy todir="${build}/temp/custom/actions/notify-bppm-of-event">
+           		<fileset dir="${custom-actions}/notify-bppm-of-event/" includes="notify-bppm-of-event.*"/>
+		</copy>
+		<chmod perm="a+x">
+			<fileset dir="${build}/temp/custom/actions/notify-bppm-of-event" includes="notify-bppm-of-event.*"/>
+		</chmod>
+                <copy todir="${build}/temp/custom/actions/notify-bppm-of-policy-violation">
+			<fileset dir="${custom-actions}/notify-bppm-of-policy-violation/" includes="notify-bppm-of-policy-violation.*"/>
+		</copy>
+		<chmod perm="a+x">
+			<fileset dir="${build}/temp/custom/actions/notify-bppm-of-policy-violation/" includes="notify-bppm-of-policy-violation.*"/>
+		</chmod>
+                <copy todir="${build}/temp/custom/conf/">
+			<fileset file="${conf}/bppmClient.properties"/>
+		</copy>
+                <copy todir="${build}/temp/custom/lib/">
+			<fileset file="${conf}/log4j.dtd"/>
+			<fileset file="${conf}/log4j.xml"/>
+			<fileset file="${axis2-commons-codec}"/>
+			<fileset file="${xml-schema}"/>
+			<fileset file="${axiom-api}"/>
+			<fileset file="${axiom-impl}"/>
+			<fileset file="${axis2-adb}"/>
+			<fileset file="${axis2-kernel}"/>
+			<fileset file="${axis2-metadata}"/>
+			<fileset file="${axis2-http-transport}" />
+			<fileset file="${axis2-local-transport}"/>
+			<fileset file="${axis2-commons-cli}"/>
+			<fileset file="${axis2-commons-codec}"/>
+			<fileset file="${axis2-commons-httpclient}"/>
+			<fileset file="${axis2-commons-io}"/>
+			<fileset file="${axis2-commons-logging}"/>
+			<fileset file="${axis2-http-core}" />
+			<fileset file="${axis2-jsr311-api}"/>
+			<fileset file="${axis2-log4j}" />
+			<fileset file="${axis2-wsdl4j}" />
+			<fileset file="${axis2-xalan}" />
+			<fileset file="${axis2-xmlresolver}"/>
+			<fileset file="${axis2-neethi}"/>
+			<fileset file="${axis2-mail}" />
+			<fileset file="${axis2-commons-codec-lic}"/>
+			<fileset file="${xml-schema-lic}"/>
+			<fileset file="${axiom-api-lic}"/>
+			<fileset file="${axiom-impl-lic}"/>
+			<fileset file="${axis2-lic}"/>
+			<fileset file="${axis2-commons-cli-lic}"/>
+			<fileset file="${axis2-commons-codec-lic}"/>
+			<fileset file="${axis2-commons-httpclient-lic}"/>
+			<fileset file="${axis2-commons-io-lic}"/>
+			<fileset file="${axis2-commons-logging-lic}"/>
+			<fileset file="${axis2-http-core-lic}" />
+			<fileset file="${axis2-jsr311-api-lic}"/>
+			<fileset file="${axis2-log4j-lic}" />
+			<fileset file="${axis2-wsdl4j-lic}" />
+			<fileset file="${axis2-xalan-lic}" />
+			<fileset file="${axis2-xmlresolver-lic}"/>
+			<fileset file="${axis2-neethi-lic}"/>
+			<fileset file="${axis2-mail-lic}" />
+		</copy>
+
+                <zip destfile="${dist}/bppmClient-${bppm-client-version}.zip">
+                        <zipfileset dir="${build}/temp" filemode="755"/>
+                </zip>
+        </target>
+</project>

@@ -1,0 +1,10 @@
+<custom-actions>
+	<action>
+		<type>notify-bppm-of-event</type>
+		<executable>notify-bppm-of-event.sh</executable>
+	</action>
+	<action>
+		<type>notify-bppm-of-policy-violation</type>
+		<executable>notify-bppm-of-policy-violation.sh</executable>
+	</action>
+</custom-actions>
