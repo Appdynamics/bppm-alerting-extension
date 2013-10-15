@@ -1,4 +1,4 @@
-# AppDynamics BMC ProactiveNet Performance Management - Performance Testing Extension
+# AppDynamics BPPM (BMC ProactiveNet Performance Management) - Alerting Extension
 
 ##Use Case
 
