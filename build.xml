@@ -11,6 +11,7 @@
 	<property name="docs" location="${build}/docs"/>
 	<property name="dist" location="dist"/>
 	<property name="conf" location="src/main/conf"/>
+	<property name="certs" location="src/main/certs"/>
 	<property name="custom-actions" location="src/main/custom/actions"/>
     	<property name="xml-schema" location="lib/axis2-1.6.1/XmlSchema-1.4.7.jar"/>
     	<property name="axiom-api" location="lib/axis2-1.6.1/axiom-api-1.2.12.jar"/>
@@ -70,6 +71,7 @@
 		<mkdir dir="${build}/temp/custom/lib"/>
 		<mkdir dir="${build}/temp/custom/logs"/>
 		<mkdir dir="${build}/temp/custom/conf"/>
+		<mkdir dir="${build}/temp/custom/certs"/>
 		<mkdir dir="${build}/temp/custom/actions"/>
 		<mkdir dir="${build}/temp/custom/actions/notify-bppm-of-event"/>
 		<mkdir dir="${build}/temp/custom/actions/notify-bppm-of-policy-violation"/>
@@ -195,6 +197,11 @@
 		</chmod>
                 <copy todir="${build}/temp/custom/conf/">
 			<fileset file="${conf}/bppmClient.properties"/>
+		</copy>
+                <copy todir="${build}/temp/custom/certs/">
+			<fileset file="${certs}/iiwscacerts.jks"/>
+			<fileset file="${certs}/iiwsssl.jks"/>
+			<fileset file="${certs}/iiwsssl.cer"/>
 		</copy>
                 <copy todir="${build}/temp/custom/lib/">
 			<fileset file="${conf}/log4j.dtd"/>
