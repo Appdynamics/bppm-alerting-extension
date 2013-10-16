@@ -17,4 +17,4 @@
 # ------------------------------------------------
 # Shell script to send event notifications to BPPM
 # ------------------------------------------------
-java -DBPPM_CLIENT_HOME=../.. -jar ../../lib/bppmClient.jar Event "$@"
+java -Djavax.net.ssl.trustStore=../../certs/iiwscacerts.jks -Djavax.net.sll.trustStorePassword=bmciiws -DBPPM_CLIENT_HOME=../.. -jar ../../lib/bppmClient.jar Event "$@"

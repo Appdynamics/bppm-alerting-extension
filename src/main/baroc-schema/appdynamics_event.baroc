@@ -10,7 +10,8 @@
 #
 # Authors  	: Pranta Das (AppDynamics).
 # Created on: December 28, 2011
-# Updated on: April 4, 2012
+# Updated on: April 4, 2012 for 3.4 compatibility
+# Updated on  October 16, 2013 for 3.7 compatibility
 #
 #
 ################################################################################
@@ -91,9 +92,10 @@ DEFINES
 	ad_use_default_baseline: MC_YESNO;
 	ad_baseline_name: STRING;
 	ad_baseline_id: INTEGER;
+    ad_policy_event_type: STRING;
 };
 END
-
+ 
 
 #-----------------------------------------------------------------------
 # 

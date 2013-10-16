@@ -22,7 +22,8 @@ package com.appdynamics.bmc.bppmClient;
  * Copyright (c) AppDynamics, Inc.
  * @author Pranta Das
  * Created on: December 9, 2011.
- * Updated on: April 10, 2012.
+ * Updated on: April 10, 2012 for 3.4 support.
+ * Updated on: October 15, 2013 for 3.7 support.
  */
 
 import com.appdynamics.common.*;
@@ -33,6 +34,8 @@ import com.appdynamics.bmc.bppmClient.stubs.ImpactManagerStub.NameValue;
 
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import java.lang.management.ManagementFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -51,6 +54,9 @@ import java.util.Properties;
 public class SendADNotificationToBPPM implements NotificationParameters 
 {
 
+    static {
+        MDC.put("PID", ManagementFactory.getRuntimeMXBean().getName());
+   }
 
 	private static Logger logger = 
 				Logger.getLogger(
@@ -79,6 +85,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	private static final String BMC_TAG = "ad_tag";
 	private static final String BMC_PRIORITY = "mc_priority";
 	private static final String BMC_SEVERITY = "severity";
+
 
 	private static final String BMC_PERIOD_IN_MINUTES ="ad_period_in_minutes";
 	 
@@ -117,6 +124,8 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	private static final String BMC_EVENT_TYPE = "ad_event_types";
 	private static final String BMC_NUMBER_OF_EVENTS_FOR_EVENT_TYPE = 
 							"ad_number_of_events_for_event_type";
+
+	private static final String BMC_POLICY_EVENT_TYPE = "ad_policy_event_type";
 	
 	/**
 	 * Parameter data types
@@ -198,7 +207,9 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	 /*[28]*/{PVN_TC_OBSERVED_VALUE, LONG, BMC_METRIC_VALUE},
 	 /*[29]*/{PVN_SUMMARY_MESSAGE, STRING, BMC_SITUATION_MESSAGE},
 	 /*[30]*/{PVN_INCIDENT_ID, STRING, BMC_TOOL_ID},
-	 /*[31]*/{CONTROLLER_DEEP_LINK_URL, STRING, BMC_OBJECT_URI}
+	 /*[31]*/{CONTROLLER_DEEP_LINK_URL, STRING, BMC_OBJECT_URI},
+     /*[32]*/{PVN_EVENT_TYPE, STRING, BMC_POLICY_EVENT_TYPE}
+
 	};
 	
 	 static final int PVN_NUM_OF_EVAL_ENTITIES_INDEX = 12;
@@ -207,7 +218,8 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	 static final int PVN_NUM_OF_TRIG_CONDS_ATTRS = 12;
 	 static final int PVN_TC_CONDITION_UNIT_TYPE_INDEX = 23;
 	 static final int PVN_NUMBER_OF_BASELINE_PARMS = 3;
-	 static final int PVN_DEEP_LINK_INDEX = 31;
+	 
+
 	 static final String[][] eventNotificationParmsAndTypes = 
 	{		
 	 /*[0]*/{APPLICATION_NAME, STRING, BMC_APPLICATION_NAME},
@@ -232,7 +244,6 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	/*[18]*/{CONTROLLER_DEEP_LINK_URL, STRING, BMC_OBJECT_URI}
 	};
 
-	 static final int EN_DEEP_LINK_INDEX = 18;
 	 static final int EN_NUM_OF_EV_TYPS_INDEX = 9;
 	 static final int EN_NUM_OF_EV_TYPS_ATTRS = 2;
 	 static final int EN_NUM_OF_EV_SUMRY_INDEX = 12;
@@ -386,7 +397,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 			if (connId == 0)
 			{
 				logger.error(" ERROR: Connect to cell:"
-							+cellName+"failed.");
+							+cellName+" failed.");
 				return false;
 			}
 		} 
@@ -739,17 +750,39 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	 * 
 	 * @param args - the list of arguments received with the event notification
 	 * @return true if all goes well, false otherwise
-	 */
+	 */	
 	private static boolean sendEventNotification(String args[])
 	{
 		try
 		{
-			int numEventTypes = Integer.parseInt(
-								args[EN_NUM_OF_EV_TYPS_INDEX+1]),
-			numEventSummariesIndex = EN_NUM_OF_EV_TYPS_INDEX+2
-							+(numEventTypes*EN_NUM_OF_EV_TYPS_ATTRS),
-			numEventSummaries = Integer.parseInt(args[numEventSummariesIndex]),
-			numParms = EN_NUM_OF_EV_TYPS_INDEX+2
+
+			int numEventTypes=0;
+			
+			try 
+			{
+				numEventTypes = Integer.parseInt(
+									args[EN_NUM_OF_EV_TYPS_INDEX+1]);
+			}
+			catch(NumberFormatException nfe)
+			{
+				logger.error("Unable to parse numEventTypes from:"+args[EN_NUM_OF_EV_TYPS_INDEX+1], nfe);
+			}
+			
+			int numEventSummariesIndex = EN_NUM_OF_EV_TYPS_INDEX+2
+									+(numEventTypes*EN_NUM_OF_EV_TYPS_ATTRS);
+									
+
+            int numEventSummaries = 0;
+            try
+            {
+		    	numEventSummaries = Integer.parseInt(args[numEventSummariesIndex]);
+            }
+            catch(NumberFormatException nfe)
+            {
+                logger.error("Unable to parse numEventSummaries from:"+args[numEventSummariesIndex], nfe);
+            }
+
+			int numParms = EN_NUM_OF_EV_TYPS_INDEX+2
 					 +(numEventTypes*EN_NUM_OF_EV_TYPS_ATTRS)
 					 +(numEventSummaries*EN_NUM_OF_EV_SUMRY_ATTRS)+1,
 			argsIndex=1,
@@ -767,34 +800,39 @@ public class SendADNotificationToBPPM implements NotificationParameters
 								 mandatoryBMCEventAttributes[m][2],
 								 mandatoryBMCEventAttributes[m][1]);	
 			}
-			// build the IIWS event
+			
+
 			for (int i=0; i < numParms; i++)
 			{
 				if ((argsIndex-1) == EN_NUM_OF_EV_TYPS_INDEX)
 				{
 					argsIndex++;
-					ArrayList<String> eventTypes = 
-													new ArrayList<String>();
-					ArrayList<Integer> numberOfEventsForEventType = 
-													new ArrayList<Integer>();
+					StringBuffer eventTypes = new StringBuffer("{");
+					StringBuffer numberOfEventsForEventType = new StringBuffer("{");
 					for (int j = 0; j < numEventTypes; 
 								j++, i+=EN_NUM_OF_EV_TYPS_ATTRS)
 					{
-						eventTypes.add(args[argsIndex++]);
-						numberOfEventsForEventType.add(
-							Integer.parseInt(args[argsIndex++]));                             
+                        if (j > 0)
+                        {
+                            eventTypes.append(", ");
+                            numberOfEventsForEventType.append(", ");
+                        }
+						eventTypes.append(args[argsIndex++]);
+						numberOfEventsForEventType.append(
+                                args[argsIndex++]);
 					}
+
                     setNameValuePair(nameValues[0],
                             eventNotificationParmsAndTypes[
                                        EN_NUM_OF_EV_TYPS_INDEX+1][2],
-                            eventTypes.toArray(), 
+                            eventTypes.append("}").toString(),
                             eventNotificationParmsAndTypes[
                                     EN_NUM_OF_EV_TYPS_INDEX+1][1]);
 					
                     setNameValuePair(nameValues[0],
                             eventNotificationParmsAndTypes[
                                        EN_NUM_OF_EV_TYPS_INDEX+2][2],
-                            numberOfEventsForEventType.toArray(), 
+                            numberOfEventsForEventType.append("}").toString(),
                             eventNotificationParmsAndTypes[
                                     EN_NUM_OF_EV_TYPS_INDEX+2][1]);
 
@@ -803,42 +841,41 @@ public class SendADNotificationToBPPM implements NotificationParameters
 				else 
 				if (argsIndex == numEventSummariesIndex)
 				{
-					argsIndex++;
-					@SuppressWarnings("unchecked")
-					ArrayList<ImpactManagerStub.NameValue> tmp = 
-						(ArrayList<NameValue>) nameValues[0].clone();
-					for (int j = 0; j < numEventSummaries; 
-								j++, i+=EN_NUM_OF_EV_SUMRY_ATTRS)
-					{
-						if (j > 0)
+						argsIndex++;
+						@SuppressWarnings("unchecked")
+						ArrayList<ImpactManagerStub.NameValue> tmp = 
+							(ArrayList<NameValue>) nameValues[0].clone();
+						for (int j = 0; j < numEventSummaries; 
+									j++, i+=EN_NUM_OF_EV_SUMRY_ATTRS)
 						{
-							nameValues[j]= 
-								new ArrayList<ImpactManagerStub.NameValue>();
-							
-							nameValues[j].addAll(tmp);
+							if (j > 0)
+							{
+								nameValues[j]= 
+									new ArrayList<ImpactManagerStub.NameValue>();
+								
+								nameValues[j].addAll(tmp);
 
+							}
+							for (int k=0; k < EN_NUM_OF_EV_SUMRY_ATTRS; k++)
+							{
+	                            setNameValuePair(nameValues[j], 
+	                                    eventNotificationParmsAndTypes[
+	                                           EN_NUM_OF_EV_SUMRY_INDEX+1+k][2],
+	                                    args[argsIndex++], 
+	                                    eventNotificationParmsAndTypes[
+	                                           EN_NUM_OF_EV_SUMRY_INDEX+1+k][1]);
+							}
 						}
-						for (int k=0; k < EN_NUM_OF_EV_SUMRY_ATTRS; k++)
-						{
-                            setNameValuePair(nameValues[j], 
-                                    eventNotificationParmsAndTypes[
-                                           EN_NUM_OF_EV_SUMRY_INDEX+1+k][2],
-                                    args[argsIndex++], 
-                                    eventNotificationParmsAndTypes[
-                                           EN_NUM_OF_EV_SUMRY_INDEX+1+k][1]);
-						}
+						parmIndex += EN_NUM_OF_EV_SUMRY_ATTRS+1;
 					}
-					parmIndex += EN_NUM_OF_EV_SUMRY_ATTRS+1;
-				}
-				else
-				{
-					setNameValuePair(nameValues[0], 
-							     eventNotificationParmsAndTypes[parmIndex][2],
-							     args[argsIndex++], 
-							     eventNotificationParmsAndTypes[parmIndex][1]);
-					parmIndex++;
-				}
-				
+					else
+					{
+						setNameValuePair(nameValues[0], 
+								     eventNotificationParmsAndTypes[parmIndex][2],
+								     args[argsIndex++], 
+								     eventNotificationParmsAndTypes[parmIndex][1]);
+						parmIndex++;
+					}
 			}
 			
 			for (int i = 0; i < numEventSummaries; i++)
@@ -876,6 +913,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 		
 		return true;
 	}
+
 		
 	/**
 	 * This method will send an policy violation notification received from 
@@ -888,16 +926,24 @@ public class SendADNotificationToBPPM implements NotificationParameters
 	 */
 	private static boolean sendPolicyViolationNotification(String args[])
 	{
-		int numEvaluationEntities = Integer.parseInt(
-				args[PVN_NUM_OF_EVAL_ENTITIES_INDEX+1]),
-			numParms = PVN_NUM_OF_EVAL_ENTITIES_INDEX
+        int numEvaluationEntities =0;
+		try
+        {
+            numEvaluationEntities = Integer.parseInt(
+                    args[PVN_NUM_OF_EVAL_ENTITIES_INDEX+1]);
+        }
+        catch(NumberFormatException nfe)
+        {
+            logger.error("Unable to parse numEvaluationEntities from:"+args[PVN_NUM_OF_EVAL_ENTITIES_INDEX+1], nfe);
+
+        }
+		int	numParms = PVN_NUM_OF_EVAL_ENTITIES_INDEX
 				+1+(numEvaluationEntities*PVN_NUM_OF_EVAL_ENTITIES_ATTRS)+2,
 			argsIndex = 1,
 			parmIndex=0;
 
 		try
 		{
-
 			@SuppressWarnings("unchecked")
 			ArrayList<ImpactManagerStub.NameValue>[] nameValues = 
 									new ArrayList[numEvaluationEntities*50];
@@ -911,7 +957,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 								 mandatoryBMCEventAttributes[man][2],
 								 mandatoryBMCEventAttributes[man][1]);
 			}
-			// build the IIWS event
+
 			while (argsIndex < args.length)
 			{
 				if ((argsIndex-1) == PVN_NUM_OF_EVAL_ENTITIES_INDEX)
@@ -928,9 +974,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 						{
 							nameValues[j]= 
 								new ArrayList<ImpactManagerStub.NameValue>();
-							
 							nameValues[j].addAll(tmp);
-
 						}
 
 						for (int k=0; k < PVN_NUM_OF_EVAL_ENTITIES_ATTRS; k++)
@@ -940,8 +984,18 @@ public class SendADNotificationToBPPM implements NotificationParameters
 								PVN_NUM_OF_TRIG_CONDS_INDEX)
 								{
 									argsIndex++;
-									int numTriggeredConditions = 
-										Integer.parseInt(args[argsIndex]);
+
+									int numTriggeredConditions = 0;
+                                    try
+                                    {
+										numTriggeredConditions=Integer.parseInt(args[argsIndex]);
+                                    }
+                                    catch(NumberFormatException nfe)
+                                    {
+                                        logger.error("Unable to parse numTriggeredConditions from:"
+                                                +args[argsIndex], nfe);
+
+                                    }
 									numParms += PVN_NUM_OF_TRIG_CONDS_ATTRS+1;
 									@SuppressWarnings("unchecked")
 									ArrayList<ImpactManagerStub.NameValue> tmp2  
@@ -957,9 +1011,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 											nameValues[l]= 
 												new ArrayList<
 												ImpactManagerStub.NameValue>();
-											
 											nameValues[l].addAll(tmp2);
-
 										}
 
 										for (int m=0; 
@@ -983,23 +1035,17 @@ public class SendADNotificationToBPPM implements NotificationParameters
 												{
 													m+=PVN_NUMBER_OF_BASELINE_PARMS;
 													numParms -=3;
-													continue;
-												}
+                                                }
 												else if (args[argsIndex].equalsIgnoreCase(
 															TRUE))
 												{
 													m+=PVN_NUMBER_OF_BASELINE_PARMS-1;
 													numParms -=2;
-													continue;
-												}
+                                                }
 											}
 										}
 									}
 									
-									if (l > 0)
-									{
-										parmIndex += PVN_NUM_OF_TRIG_CONDS_ATTRS+1;
-									}
 								}
 								else
 								{
@@ -1015,7 +1061,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 							}
 					}
 					
-					parmIndex += PVN_NUM_OF_EVAL_ENTITIES_ATTRS+1;
+					parmIndex += (PVN_NUM_OF_EVAL_ENTITIES_ATTRS+PVN_NUM_OF_TRIG_CONDS_ATTRS+2);
 				}
 				else
 				{
@@ -1080,6 +1126,15 @@ public class SendADNotificationToBPPM implements NotificationParameters
 		return true;
 	}
 
+    static void removeDoubleQuotes(String[] args)
+    {
+
+        for (int i=0; i < args.length; i++)
+        {
+            args[i]=args[i].replaceAll("\"", "");
+        }
+    }
+
 	/**
 	 * Main method called from AppDynamics custom action shell script 
 	 * or batch file.
@@ -1101,6 +1156,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 		logger.info("Received notification parameters:"+
 				Arrays.toString(args));
 
+        removeDoubleQuotes(args);
 
 		int rc = 0;
 

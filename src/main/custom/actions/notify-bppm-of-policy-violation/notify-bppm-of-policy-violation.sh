@@ -18,4 +18,4 @@
 # Shell script to send policy violation notifications to BPPM
 # -----------------------------------------------------------
 #DEBUG_OPTS="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5009"
-java $DEBUG_OPTS -DBPPM_CLIENT_HOME=../.. -jar ../../lib/bppmClient.jar PolicyViolation "$@"
+java -Djavax.net.ssl.trustStore=../../certs/iiwscacerts.jks -Djavax.net.sll.trustStorePassword=bmciiws $DEBUG_OPTS -DBPPM_CLIENT_HOME=../.. -jar ../../lib/bppmClient.jar PolicyViolation "$@"
