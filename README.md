@@ -93,7 +93,7 @@ reload kb
 
 ##Contributing
 
-Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/bmc-proactivenet-alerting-extension).
+Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/bppm-alerting-extension).
 
 ##Community
 
