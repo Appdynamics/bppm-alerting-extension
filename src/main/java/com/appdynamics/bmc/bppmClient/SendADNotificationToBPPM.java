@@ -453,7 +453,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 		{
 			logger.error(e);
 		}
-		logger.info(" Disconneced:" + connId);
+		logger.info(" Disconnected:" + connId);
 	}
 
 	/**
