@@ -548,6 +548,11 @@ public class SendADNotificationToBPPM implements NotificationParameters
 					 String dataType)
 	{		
 		
+		//kunal.gupta adding a fix for NPE
+		if(nameValues == null || name == null || dataType == null || valueObject == null){
+			return;
+		}
+		
 		valueObject = transformIfNecessary(name, (String) valueObject);
 		
 		ImpactManagerStub.NameValue nvPair = new ImpactManagerStub.NameValue();
@@ -945,8 +950,13 @@ public class SendADNotificationToBPPM implements NotificationParameters
 		try
 		{
 			@SuppressWarnings("unchecked")
-			ArrayList<ImpactManagerStub.NameValue>[] nameValues = 
-									new ArrayList[numEvaluationEntities*50];
+			ArrayList<ImpactManagerStub.NameValue>[] nameValues = null;
+			if(numEvaluationEntities == 0){
+				nameValues = new ArrayList[50];
+			}
+			else{
+				nameValues = new ArrayList[numEvaluationEntities*50];
+			}
 			nameValues[0]= new ArrayList<ImpactManagerStub.NameValue>();
 
 			
@@ -960,7 +970,8 @@ public class SendADNotificationToBPPM implements NotificationParameters
 
 			while (argsIndex < args.length)
 			{
-				if ((argsIndex-1) == PVN_NUM_OF_EVAL_ENTITIES_INDEX)
+				//kunal.gupta adding a fix to skip all the processing when the numEvaluationEntities = 0;
+				if ((argsIndex-1) == PVN_NUM_OF_EVAL_ENTITIES_INDEX && numEvaluationEntities != 0)
 				{
 					@SuppressWarnings("unchecked")
 					ArrayList<ImpactManagerStub.NameValue> tmp = 
@@ -1065,11 +1076,18 @@ public class SendADNotificationToBPPM implements NotificationParameters
 				}
 				else
 				{
-					setNameValuePair(nameValues[0], 
-							pvnParmsAndTypes[parmIndex][2],
-							args[argsIndex++], 
-							pvnParmsAndTypes[parmIndex][1]);
-					parmIndex++;
+					//kunal.gupta jumping to summary_message when num of entities = 0 (condition is checked above if)
+					if((argsIndex-1) == PVN_NUM_OF_EVAL_ENTITIES_INDEX){
+						parmIndex = 29;
+						argsIndex++;
+					}
+					else{
+						setNameValuePair(nameValues[0], 
+								pvnParmsAndTypes[parmIndex][2],
+								args[argsIndex++], 
+								pvnParmsAndTypes[parmIndex][1]);
+						parmIndex++;
+					}
 				}
 				
 			}
