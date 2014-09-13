@@ -1050,7 +1050,8 @@ public class SendADNotificationToBPPM implements NotificationParameters
 												else if (args[argsIndex].equalsIgnoreCase(
 															TRUE))
 												{
-													m+=PVN_NUMBER_OF_BASELINE_PARMS-1;
+													m+=PVN_NUMBER_OF_BASELINE_PARMS;
+													argsIndex++;
 													numParms -=2;
                                                 }
 											}

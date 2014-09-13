@@ -113,6 +113,7 @@
 	</target>
 	<target name="compile" depends="init">
         	<javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="off" includeantruntime="false">
+        	<!-- <javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="on" debuglevel="lines,vars,source"> -->
 		   <src path="${src}"/>
 		   <classpath>
 			<pathelement location="${xml-schema}"/>
@@ -185,15 +186,19 @@
         </if>
                 <copy todir="${build}/temp/custom/actions/notify-bppm-of-event">
            		<fileset dir="${custom-actions}/notify-bppm-of-event/" includes="notify-bppm-of-event.*"/>
+           		<fileset dir="${custom-actions}/notify-bppm-of-event/" includes="test_notify-bppm-of-event*.*"/>
 		</copy>
 		<chmod perm="a+x">
 			<fileset dir="${build}/temp/custom/actions/notify-bppm-of-event" includes="notify-bppm-of-event.*"/>
+			<fileset dir="${build}/temp/custom/actions/notify-bppm-of-event" includes="test_notify-bppm-of-event*.*"/>
 		</chmod>
                 <copy todir="${build}/temp/custom/actions/notify-bppm-of-policy-violation">
 			<fileset dir="${custom-actions}/notify-bppm-of-policy-violation/" includes="notify-bppm-of-policy-violation.*"/>
+			<fileset dir="${custom-actions}/notify-bppm-of-policy-violation/" includes="test_notify-bppm-of-policy-violation*.*"/>
 		</copy>
 		<chmod perm="a+x">
 			<fileset dir="${build}/temp/custom/actions/notify-bppm-of-policy-violation/" includes="notify-bppm-of-policy-violation.*"/>
+			<fileset dir="${build}/temp/custom/actions/notify-bppm-of-policy-violation/" includes="test_notify-bppm-of-policy-violation*.*"/>
 		</chmod>
                 <copy todir="${build}/temp/custom/conf/">
 			<fileset file="${conf}/bppmClient.properties"/>
