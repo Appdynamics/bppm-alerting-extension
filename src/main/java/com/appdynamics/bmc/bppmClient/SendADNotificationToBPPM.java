@@ -1098,7 +1098,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 				if (i > 0)
 				{
 					for (int j=0, count=0, size = nameValues[0].size(); 
-							count < 3 && j < size; j++)
+							count < 4 && j < size; j++)
 					{
 						if (nameValues[0].get(j) != null)
 						{
@@ -1107,7 +1107,7 @@ public class SendADNotificationToBPPM implements NotificationParameters
 								|| (nameValues[0].get(j).getName().
 										equalsIgnoreCase(BMC_OBJECT_URI))
 								|| (nameValues[0].get(j).getName().
-										equalsIgnoreCase(BMC_TOOL_ID))
+										equalsIgnoreCase(BMC_TOOL_ID) || (nameValues[0].get(j).getName().equalsIgnoreCase(BMC_POLICY_EVENT_TYPE)))
 								)
 							{
 								nameValues[i].add(nameValues[0].get(j));

@@ -112,8 +112,8 @@
               </javac>
 	</target>
 	<target name="compile" depends="init">
-        	<javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="off" includeantruntime="false">
-        	<!-- <javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="on" debuglevel="lines,vars,source"> -->
+        	<!-- <javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="off" includeantruntime="false"> -->
+        	<javac fork="true" destdir="${classes}" source="1.5" target="1.5" debug="on" debuglevel="lines,vars,source">
 		   <src path="${src}"/>
 		   <classpath>
 			<pathelement location="${xml-schema}"/>
