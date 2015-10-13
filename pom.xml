@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>1.3.5</version>
+            <version>1.3.4</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -130,7 +130,7 @@
                                     <fileset dir="${build.directory}" includes="${project.artifactId}.${project.packaging}"/>
                                 </copy>
 
-                                <zip destfile="${target.dir}.zip">
+                                <zip destfile="${target.dir}-${project.version}.zip">
                                     <zipfileset dir="${target.dir}" filemode="755"
                                         prefix="bppm-alert/" />
                                 </zip>

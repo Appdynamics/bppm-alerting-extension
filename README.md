@@ -122,7 +122,7 @@ For Other Events, the mapping is :
 
  ##Support
 
- For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
+ For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).
 
  **Version:** 1.1
  **Controller Compatibility:** 4.1+
