@@ -1,0 +1,21 @@
+#------------------------------------------------------------------------
+# BPPM client configuration
+#------------------------------------------------------------------------
+# IIWS_URL-> Define local or remote IIWS server end point
+# CellName-> Define the cell name which the client want to events send to 
+# BindingTimeOut-> Client binding timeout in seconds. 
+# User -> User name to access the cell
+# Password -> Password to access the cell
+#------------------------------------------------------------------------
+iiwsUrl : "http://localhost:9080/imws/services/ImpactManager"
+
+cellName : "local"
+
+bindingTimeout : 60
+
+user : ""
+
+password : ""
+
+#public url for controller (http://<host>:<port> or https://<host>:<port>)
+controllerUrl : ""

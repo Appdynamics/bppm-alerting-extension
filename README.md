@@ -1,104 +1,128 @@
-# AppDynamics BPPM (BMC ProactiveNet Performance Management) - Alerting Extension
+# AppDynamics BPPM - Alerting Extension
+
+This extension works only with a dedicated SAAS controller or an on-prem controller.
 
 ##Use Case
 
-Many AppDynamics customers also use BPPM (BMC ProactiveNet Performance Management) in their data centers.  The BPPM solution combines event management, service impact management, and performance management for physical, virtual, public and private clouds. This integration allows you to receive AppDynamics alerts on policy violations and events in BPPM and makes them viewable in the BPPM console. Links in the alerts let you cross-launch in context to the exact incident (policy violation or event) in the AppDynamics UI.
+Many AppDynamics customers also use BPPM (BMC ProactiveNet Performance Management) in their data centers. The BPPM solution combines event management, service impact management, and performance management for physical, virtual, public and private clouds.This integration allows you to receive AppDynamics alerts on policy violations and events in BPPM and makes them viewable in the BPPM console.Links in the alerts let you cross-launch in context to the exact incident (policy violation or event) in the AppDynamics UI.
 
-##Installation
+### Prerequisites
 
-1.  Download the appropriate tar.gz or zip file and extract it.
-2.  For on-premise Controllers: Copy the contents of either bppm\_linux or bppm\_windows, depending on the system type, to your 
-Controller installation directory on the machine where the AppDynamics Controller is running.
-   
-     For SaaS Controllers: contact AppDynamics Support so they can provision a single-tenant Controller for you and extract the bppmClient file on your behalf.
-2.  Edit the file \<controller-home\>/custom/conf/bppmClient.properties
-    and change the properties to suit your BPPM and Impact Manager
-    installation:
-
-    ```
-    #------------------------------------------------------------------------ 
-    # BPPM client configuration
-    #------------------------------------------------------------------------ 
-    # IIWS_URL-> Define local or remote IIWS server end point 
-    # CellName-> Define the cell name which the client want to events send to 
-    # BindingTimeOut-> Client binding timeout in seconds. 
-    # User -> User name to access the cell 
-    # Password -> Password to access the cell
-    #------------------------------------------------------------------------ 
-    IIWS_URL=http://localhost:9080/imws/services/ImpactManager 
-    CellName=local 
-    BindingTimeOut=60 
-    User=admin 
-    Password=admin 
-```
-
-3.  Use the AppDynamics Controller screen to configure the custom
-    actions "notify-bppm-of-event" and "notify-bppm-of-policy violation"
-    in the Global Notifications and Policy Notifications screens.  
-    For details see the AppDynamics documentation
-    website: [http://docs.appdynamics.com](http://docs.appdynamics.com) (login required).
-4.  Install the BMC Impact Manager Web Server if it is not already
-    installed.
-5.  Copy and paste the cell entry for the BPPM server found in:
-
-    ```
- $BPPM_SERVER_HOME/pw/server/etc/mcell.dir 
-```
-
-    into:
-
-    ```
- \$IIWS_HOME/Tomcat/webapps/imws/WEB-INF/etc/mcell.dir 
-```
-
-6.  Save it and then restart the Impact Manager Web Server.
-7.  Download and save the appdynamics\_event.baroc file to
-    \$BPPM\_SERVER\_HOME/pw/server/etc/\<cell-name\>/kb/classes/
-    directory
-8.  Edit the file
-    \$BPPM\_SERVER\_HOME/pw/server/etc/\<cell-name\>/kb/classes/.load
-    and append an entry for appdynamics\_event at the bottom of the
-    file.
-9.  Then issue the following commands:
-
-    ```
-mccomp -n <cell-name> 
-mcontrol -n <cell-name> 
-reload kb 
-```
-
-10. Restart the BPPM Server.
-11. You should now be able to see AppDynamics events and policy
-    violations on the BPPM console if you have specified the custom
-    actions notify-bppm-of-policy-violation and notify-bppm-of-event to
-    be alerted for any policy violation or event respectively.
-
-##Examples
-###AppDynamics events on ProactiveNet Operations Console
-
-![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/63i4C9691E831B9B473/image-size/original?v=mpbl-1&px=-1)
-
-###Cross-launch to AppDynamics Events
-
-![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/65i9972F93DF10E0BEA/image-size/original?v=mpbl-1&px=-1)
-
-###AppDynamics Policy Violation on ProactiveNet Operation Console
-
-![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/67iB75FD08AA98636D7/image-size/original?v=mpbl-1&px=-1)
-
-###Cross-launch to AppDynamics Policy Violations
-
-![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/69iD800BD4821CF99C0/image-size/original?v=mpbl-1&px=-1)
+IIWS_URL-> Define local or remote IIWS server end point
+CellName-> Define the cell name which the client want to events send to
+BindingTimeOut-> Client binding timeout in seconds.
+User -> User name to access the cell
+Password -> Password to access the cell
 
 
-##Contributing
+##Installation Steps
 
-Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/bppm-alerting-extension).
+1. Run "mvn clean install -DskipTests". You can run the tests by configuring the service key in the config.yaml file in the test resources folder.
 
-##Community
+2. Find the zip file at 'target/bppm-alert.zip' or Download the BPPM Alerting Extension zip from [AppDynamics Exchange](http://community.appdynamics.com/t5/AppDynamics-eXchange/idb-p/extensions)
 
-Find out more in the [AppSphere](http://appsphere.appdynamics.com/t5/Extensions/BMC-ProactiveNet-Performance-Mgmt-Performance-Testing-Extension/idi-p/815) community.
+3. Unzip the bppm-alert.zip file into <CONTROLLER_HOME_DIR>/custom/actions/ . You should have  <CONTROLLER_HOME_DIR>/custom/actions/bppm-alert created
 
-##Support
+4. Check if you have custom.xml file in <CONTROLLER_HOME_DIR>/custom/actions/ directory. If yes, add the following xml to the <custom-actions> element.
 
-For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
+   ```
+      <action>
+    		  <type>bppm-alert</type>
+          <!-- For Linux/Unix *.sh -->
+     		  <executable>bppm-alert.sh</executable>
+          <!-- For windows *.bat -->
+     		  <!--<executable>bppm-alert.bat</executable>-->
+      </action>
+  ```
+
+   If you don't have custom.xml already, create one with the below xml content
+
+      ```
+      <custom-actions>
+          <action>
+      		  <type>bppm-alert</type>
+            <!-- For Linux/Unix *.sh -->
+       		  <executable>bppm-alert.sh</executable>
+            <!-- For windows *.bat -->
+       		  <!--<executable>bppm-alert.bat</executable>-->
+     	    </action>
+        </custom-actions>
+      ```
+      Uncomment the appropriate executable tag based on windows or linux/unix machine.
+
+    5. Update the config.yaml file in <CONTROLLER_HOME_DIR>/custom/actions/bppm-alert/conf/ directory
+
+###Note
+Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
+
+
+ ```
+     #------------------------------------------------------------------------
+     # BPPM client configuration
+    #------------------------------------------------------------------------
+     #IIWS_URL-> Define local or remote IIWS server end point
+     #CellName-> Define the cell name which the client want to events send to
+     #BindingTimeOut-> Client binding timeout in seconds.
+     #User -> User name to access the cell
+     #Password -> Password to access the cell
+     #------------------------------------------------------------------------
+     iiwsUrl : "http://localhost:9080/imws/services/ImpactManager"
+
+     cellName : "local"
+
+     bindingTimeout : 60
+
+     user : ""
+
+     password : ""
+
+     #public url for controller (http://<host>:<port> or https://<host>:<port>)
+     controllerUrl : ""
+
+ ```
+
+
+##BPPM Field Mapping
+
+For Health Rule Violation, the mapping is :
+
+    mc_host => Hostname of the machine where the extension is hosted.
+    mc_host_address => Address of the machine where the extension is hosted.
+    mc_origin_class => AD2BPPM-INTEGRATION-CLIENT
+    mc_object => hostName+":IncidentNotification"
+    mc_tool_rule => HEALTH_RULE_NAME
+    mc_tool_key => HEALTH_RULE_ID
+    mc_tool_id => INCIDENT_ID
+    mc_object_uri => DEEP_LINK_URL
+    msg => SUMMARY_MESSAGE
+    mc_incident_time => PVN_TIME_PERIOD_IN_MINUTES
+    mc_parameter => Names about triggered conditions.
+    mc_parameter_value => Observed values for triggered conditions.
+    mc_parameter_threshold => Threshold values for triggered conditions.
+    mc_priority => PRIORITY_5(10), PRIORITY_4(20), PRIORITY_3(30), PRIORITY_2(40), PRIORITY_1 (50);
+    (These values mean that when priority level is 1, the extension sends 50, priority level is 2, extension sends 40...and so on.)
+
+For Other Events, the mapping is :
+
+    mc_host => Hostname of the machine where the extension is hosted.
+    mc_host_address => Address of the machine where the extension is hosted.
+    mc_origin_class => AD2BPPM-INTEGRATION-CLIENT
+    mc_object => hostName+":IncidentNotification"
+    mc_tool_rule => EN_NAME
+    mc_tool_key => EN_ID
+    mc_object_uri => DEEP_LINK_URL
+    msg => event summary
+    mc_incident_time => EN_INTERVAL_IN_MINUTES
+    mc_priority => PRIORITY_5(10), PRIORITY_4(20), PRIORITY_3(30), PRIORITY_2(40), PRIORITY_1 (50);
+    (These values mean that when priority level is 1, the extension sends 50, priority level is 2, extension sends 40...and so on.)
+
+ ##Contributing
+
+ Find out more in the [AppDynamics Exchange](http://community.appdynamics.com/t5/AppDynamics-eXchange/idb-p/extensions)
+
+ ##Support
+
+ For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
+
+ **Version:** 1.1
+ **Controller Compatibility:** 4.1+
