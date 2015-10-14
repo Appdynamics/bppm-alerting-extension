@@ -52,34 +52,59 @@ Password -> Password to access the cell
 
     5. Update the config.yaml file in <CONTROLLER_HOME_DIR>/custom/actions/bppm-alert/conf/ directory
 
-###Note
-Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
+        ###Note
+        Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
 
 
- ```
-     #------------------------------------------------------------------------
-     # BPPM client configuration
-    #------------------------------------------------------------------------
-     #IIWS_URL-> Define local or remote IIWS server end point
-     #CellName-> Define the cell name which the client want to events send to
-     #BindingTimeOut-> Client binding timeout in seconds.
-     #User -> User name to access the cell
-     #Password -> Password to access the cell
-     #------------------------------------------------------------------------
-     iiwsUrl : "http://localhost:9080/imws/services/ImpactManager"
+      ```
+             #------------------------------------------------------------------------
+             # BPPM client configuration
+            #------------------------------------------------------------------------
+             #IIWS_URL-> Define local or remote IIWS server end point
+             #CellName-> Define the cell name which the client want to events send to
+             #BindingTimeOut-> Client binding timeout in seconds.
+             #User -> User name to access the cell
+             #Password -> Password to access the cell
+             #------------------------------------------------------------------------
+             iiwsUrl : "http://localhost:9080/imws/services/ImpactManager"
 
-     cellName : "local"
+             cellName : "local"
 
-     bindingTimeout : 60
+             bindingTimeout : 60
 
-     user : ""
+             user : ""
 
-     password : ""
+             password : ""
 
-     #public url for controller (http://<host>:<port> or https://<host>:<port>)
-     controllerUrl : ""
+             #public url for controller (http://<host>:<port> or https://<host>:<port>)
+             controllerUrl : ""
 
- ```
+      ```
+
+## Changes to BPPM Server
+
+
+1. Install the BMC Impact Manager Web Server if it is not already installed. Copy and paste the cell entry for the BPPM server found in:
+
+    $BPPM_SERVER_HOME/pw/server/etc/mcell.dir
+
+    into:
+
+    /$IIWS_HOME/Tomcat/webapps/imws/WEB-INF/etc/mcell.dir
+
+   Save it and then restart the Impact Manager Web Server.
+
+2. Download and save the appdynamics_event.baroc file from the attached zip to /$BPPM_SERVER_HOME/pw/server/etc/<cell-name>/kb/classes/ directory
+Edit the file /$BPPM_SERVER_HOME/pw/server/etc/<cell-name>/kb/classes/.load and append an entry for appdynamics_event at the bottom of the file.
+Then issue the following commands:
+
+    mccomp -n <cell-name>
+    mcontrol -n <cell-name>
+    reload kb
+    Restart the BPPM Server.
+
+3. You should now be able to see AppDynamics events and policy violations on the BPPM console if you have specified the custom actions to be alerted for any policy violation or event respectively in the controller.
+
 
 
 ##BPPM Field Mapping
@@ -116,11 +141,32 @@ For Other Events, the mapping is :
     mc_priority => PRIORITY_5(10), PRIORITY_4(20), PRIORITY_3(30), PRIORITY_2(40), PRIORITY_1 (50);
     (These values mean that when priority level is 1, the extension sends 50, priority level is 2, extension sends 40...and so on.)
 
- ##Contributing
+
+
+##Examples
+
+###AppDynamics events on ProactiveNet Operations Console
+
+![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/63i4C9691E831B9B473/image-size/original?v=mpbl-1&px=-1)
+
+###Cross-launch to AppDynamics Events
+
+![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/65i9972F93DF10E0BEA/image-size/original?v=mpbl-1&px=-1)
+
+###AppDynamics Policy Violation on ProactiveNet Operation Console
+
+![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/67iB75FD08AA98636D7/image-size/original?v=mpbl-1&px=-1)
+
+###Cross-launch to AppDynamics Policy Violations
+
+![](http://appsphere.appdynamics.com/t5/image/serverpage/image-id/69iD800BD4821CF99C0/image-size/original?v=mpbl-1&px=-1)
+
+
+##Contributing
 
  Find out more in the [AppDynamics Exchange](http://community.appdynamics.com/t5/AppDynamics-eXchange/idb-p/extensions)
 
- ##Support
+##Support
 
  For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).
 
