@@ -87,12 +87,12 @@ DEFINES
 	ad_scope_id: LIST_OF INTEGER;
 	ad_value_function_type: LIST_OF VALUE_FUNCTION_TYPE;
 	ad_parameter_id: LIST_OF STRING;
-	ad_operator: LIST_OF OPERATOR;
+	ad_operator: LIST_OF STRING;
 	ad_condition_unit_type: LIST_OF CONDITION_UNIT_TYPE;
-	ad_use_default_baseline: LIST_OF MC_YESNO;
+	ad_use_default_baseline: LIST_OF STRING;
 	ad_baseline_name: LIST_OF STRING;
 	ad_baseline_id: LIST_OF STRING;
-    ad_policy_event_type: LIST_OF STRING;
+    ad_policy_event_type: STRING;
 };
 END
  
