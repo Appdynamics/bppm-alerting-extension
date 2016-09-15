@@ -23,7 +23,7 @@
   </logger>
   
   <logger name="org.apache" additivity="false">
-	<level value="info"/>
+	<level value="off"/>
 	<appender-ref ref="RollingFileAppender"/>
 	<appender-ref ref="ConsoleAppender"/>
   </logger>
