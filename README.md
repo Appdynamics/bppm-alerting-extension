@@ -170,5 +170,5 @@ For Other Events, the mapping is :
 
  For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:help@appdynamics.com).
 
- **Version:** 1.1
+ **Version:** 3.0.3
  **Controller Compatibility:** 4.1+
